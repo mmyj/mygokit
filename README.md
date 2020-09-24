@@ -1,1 +1,1 @@
-# kit
+# mygokit
