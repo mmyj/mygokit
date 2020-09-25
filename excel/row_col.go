@@ -24,8 +24,8 @@ func (k ColMate) Tag() string {
 }
 
 type RowMate struct {
-	structMap map[uintptr]*ColMate
-	columnMap map[uintptr]*ColMate
+	columnMap  map[uintptr]*ColMate
+	columnList []*ColMate
 }
 
 func (m *RowMate) init(i interface{}) {
@@ -51,15 +51,8 @@ func (m *RowMate) init(i interface{}) {
 			v:   fv,
 		}
 
-		switch field.Type.Kind() {
-		case reflect.Struct:
-			if fv.Addr().CanInterface() {
-				m.structMap[fv.UnsafeAddr()] = it
-				m.init(fv.Addr().Interface())
-			}
-		default:
-			m.columnMap[fv.UnsafeAddr()] = it
-		}
+		m.columnMap[fv.UnsafeAddr()] = it
+		m.columnList = append(m.columnList, it)
 	}
 }
 
@@ -70,9 +63,6 @@ func (m *RowMate) Column(i interface{}) ColMate {
 	v := reflect.ValueOf(i).Elem()
 	addr := v.UnsafeAddr()
 	retMap := m.columnMap
-	if v.Kind() == reflect.Struct {
-		retMap = m.structMap
-	}
 	if retMap[addr] == nil {
 		log.Fatalln("NO FIELD")
 	}
@@ -81,8 +71,8 @@ func (m *RowMate) Column(i interface{}) ColMate {
 
 func ReflectRomMate(i interface{}) *RowMate {
 	m := new(RowMate)
-	m.structMap = make(map[uintptr]*ColMate)
 	m.columnMap = make(map[uintptr]*ColMate)
+	m.columnList = make([]*ColMate, 0)
 
 	if reflect.TypeOf(i).Elem().Kind() != reflect.Struct &&
 		reflect.TypeOf(i).Kind() != reflect.Ptr {
@@ -95,7 +85,7 @@ func ReflectRomMate(i interface{}) *RowMate {
 
 func GetAllColumnName(i interface{}) (ret []string) {
 	m := ReflectRomMate(i)
-	for _, c := range m.columnMap {
+	for _, c := range m.columnList {
 		ret = append(ret, c.tag)
 	}
 	return
@@ -103,7 +93,7 @@ func GetAllColumnName(i interface{}) (ret []string) {
 
 func GetAllColumnNameInterface(i interface{}) (ret []interface{}) {
 	m := ReflectRomMate(i)
-	for _, c := range m.columnMap {
+	for _, c := range m.columnList {
 		ret = append(ret, c.tag)
 	}
 	return
@@ -111,7 +101,7 @@ func GetAllColumnNameInterface(i interface{}) (ret []interface{}) {
 
 func GetAllColumnValue(i interface{}) (ret []interface{}) {
 	m := ReflectRomMate(i)
-	for _, c := range m.columnMap {
+	for _, c := range m.columnList {
 		ret = append(ret, c.v)
 	}
 	return
