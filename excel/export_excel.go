@@ -1,8 +1,7 @@
-package export
+package excel
 
 import (
 	"fmt"
-	"mygokit/excel"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
@@ -34,7 +33,7 @@ func NewExcel(sheet string, row interface{}) (*Writer, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: NewStreamWriter failed", err)
 	}
-	err = streamWriter.SetRow("A1", excel.GetAllColumnNameInterface(row))
+	err = streamWriter.SetRow("A1", GetAllColumnNameInterface(row))
 	if err != nil {
 		return nil, fmt.Errorf("%w: SetRow failed", err)
 	}
@@ -44,7 +43,7 @@ func NewExcel(sheet string, row interface{}) (*Writer, error) {
 func (w *Writer) Append(rows []interface{}) error {
 	for _, row := range rows {
 		cell, _ := excelize.CoordinatesToCellName(1, w.rowCount)
-		if err := w.sw.SetRow(cell, excel.GetAllColumnValue(row)); err != nil {
+		if err := w.sw.SetRow(cell, GetAllColumnValue(row)); err != nil {
 			return fmt.Errorf("%w: SetRow failed", err)
 		}
 		w.rowCount++
