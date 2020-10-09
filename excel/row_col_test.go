@@ -1,7 +1,6 @@
-package excel_test
+package excel
 
 import (
-	"mygokit/excel"
 	"testing"
 
 	"github.com/go-playground/assert/v2"
@@ -16,7 +15,7 @@ func TestMetaInit(t *testing.T) {
 		School: "1234",
 		Name:   "5678",
 	}
-	m := excel.ReflectRomMate(&col1)
+	m := ReflectRomMate(&col1)
 	assert.Equal(t, m.Column(&col1.Name).Tag(), "姓名")
-	assert.Equal(t, excel.GetAllColumnValue(&col1), []interface{}{"1234", "5678"})
+	assert.Equal(t, GetAllColumnValue(&col1), []interface{}{"1234", "5678"})
 }

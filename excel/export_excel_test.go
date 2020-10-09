@@ -1,7 +1,6 @@
-package excel_test
+package excel
 
 import (
-	"mygokit/excel"
 	"testing"
 
 	"github.com/go-playground/assert/v2"
@@ -16,7 +15,7 @@ func TestSaveTo(t *testing.T) {
 		School: "1234",
 		Name:   "5678",
 	}
-	err := excel.SaveExcelTo("test.xlsx", "Sheet1", []interface{}{col1})
+	err := SaveExcelTo("test.xlsx", "Sheet1", []interface{}{col1})
 	assert.Equal(t, err, nil)
 }
 
@@ -29,7 +28,7 @@ func TestAppend(t *testing.T) {
 		School: "1234",
 		Name:   "5678",
 	}
-	excel, err := excel.NewExcel("Sheet1", col1)
+	excel, err := NewExcel("Sheet1", col1)
 	assert.Equal(t, err, nil)
 	err = excel.Append([]interface{}{col1, col1, col1, col1})
 	assert.Equal(t, err, nil)
